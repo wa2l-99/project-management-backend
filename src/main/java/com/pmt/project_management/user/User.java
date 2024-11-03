@@ -1,5 +1,6 @@
 package com.pmt.project_management.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pmt.project_management.history.TaskModifiedHistory;
 import com.pmt.project_management.project.Project;
@@ -44,9 +45,9 @@ public class User implements UserDetails, Principal {
 
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = true)
+    private Role role;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -67,6 +68,7 @@ public class User implements UserDetails, Principal {
 
     // Relation OneToMany pour les tâches assignées à l'utilisateur
     @OneToMany(mappedBy = "assignedTo")
+    @JsonBackReference
     private Set<Task> assignedTasks = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
@@ -75,7 +77,9 @@ public class User implements UserDetails, Principal {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getNom().name())).collect(Collectors.toList());
+        return role != null ?
+                Set.of(new SimpleGrantedAuthority(role.getNom().name())) :
+                Set.of();
     }
 
     @Override

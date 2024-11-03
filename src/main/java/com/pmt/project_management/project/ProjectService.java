@@ -45,17 +45,17 @@ public class ProjectService {
         }
 
         // Vérifier si l'utilisateur n'a aucun rôle
-        if (user.getRoles().isEmpty()) {
+        if (user.getRole() == null) {
             // Récupérer le rôle ADMIN depuis la base de données
             Role adminRole = roleRepository.findByNom(ERole.ADMIN)
                     .orElseThrow(() -> new IllegalStateException("Error: Role ADMIN is not found."));
 
             // Assigner le rôle ADMIN à l'utilisateur
-            user.getRoles().add(adminRole);
+            user.setRole(adminRole);
             userRepository.save(user);  // Persister la modification du rôle de l'utilisateur
         }
         // Si l'utilisateur a un rôle autre que ADMIN, il ne peut pas créer un projet
-        else if (user.getRoles().stream().noneMatch(role -> role.getNom().equals(ERole.ADMIN))) {
+        else if (!user.getRole().getNom().equals(ERole.ADMIN)) {
             throw new IllegalStateException("Vous ne possédez pas les autorisations nécessaires pour créer un projet.");
         }
 
@@ -87,7 +87,7 @@ public class ProjectService {
 
     }
 
-    public PageResponse findAllProjectsByOwner(int page, int size, Authentication connectedUser) {
+    public PageResponse<ProjectResponse> findAllProjectsByOwner(int page, int size, Authentication connectedUser) {
 
         User user = ((User) connectedUser.getPrincipal());
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
@@ -159,7 +159,7 @@ public class ProjectService {
                 .orElseThrow(() -> new IllegalStateException("Rôle non trouvé : " + request.getRole()));
 
         // Ajouter le rôle à l'utilisateur
-        member.getRoles().add(role);
+        member.setRole(role);
 
         userRepository.save(member);  // Sauvegarder l'utilisateur avec son nouveau rôle
         return role.getNom().name();
@@ -185,11 +185,8 @@ public class ProjectService {
         Role newRole = roleRepository.findByNom(ERole.valueOf(request.getRole().toUpperCase()))
                 .orElseThrow(() -> new IllegalStateException("Rôle non trouvé : " + request.getRole()));
 
-        // Supprimer les anciens rôles
-        member.getRoles().clear();
-
         // Ajouter le nouveau rôle
-        member.getRoles().add(newRole);
+        member.setRole(newRole);
 
         userRepository.save(member);
         return newRole.getNom().name();
@@ -215,11 +212,24 @@ public class ProjectService {
     }
 
     // Récupérer tous les projets où l'utilisateur est membre
-    public List<ProjectResponse> getProjectsForUser(User user) {
-        List<Project> projects = projectRepository.findByMembersContaining(user);  // Requête pour trouver les projets où l'utilisateur est membre
-        return projects.stream()
+    public PageResponse<ProjectResponse> getProjectsForUser(int page, int size, User user) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Page<Project> projects = projectRepository.findByMembersContaining(user, pageable);
+
+        List<ProjectResponse> projectResponse = projects.stream()
                 .map(projectMapper::toProjectResponse)
                 .collect(Collectors.toList());
+
+        return new PageResponse<>(
+                projectResponse,
+                projects.getNumber(),
+                projects.getSize(),
+                projects.getTotalElements(),
+                projects.getTotalPages(),
+                projects.isFirst(),
+                projects.isLast()
+        );
+
     }
 
 

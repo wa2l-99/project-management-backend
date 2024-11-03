@@ -31,10 +31,6 @@ public class Role {
     @Column(length = 20)
     private ERole nom;
 
-    @ManyToMany(mappedBy = "roles")
-    @JsonIgnore
-    private Set<User> users = new HashSet<>();
-
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;

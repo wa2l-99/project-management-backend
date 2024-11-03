@@ -34,14 +34,12 @@ public class AuthenticationService {
 
     public Integer register(RegistrationRequest registrationRequest) {
 
-        Set<Role> roles = new HashSet<>();
 
         var user = User.builder()
                 .nom(registrationRequest.getNom())
                 .prenom(registrationRequest.getPrenom())
                 .email(registrationRequest.getEmail())
                 .password(passwordEncoder.encode(registrationRequest.getPassword()))
-                .roles(roles)
                 .build();
 
         if (userRepository.existsByEmail(user.getEmail())) {

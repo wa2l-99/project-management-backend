@@ -1,6 +1,8 @@
 package com.pmt.project_management.project;
 
 import com.pmt.project_management.user.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -10,5 +12,5 @@ public interface ProjectRepository extends JpaRepository<Project, Integer>, JpaS
 
     boolean existsByName(String name);
 
-    List<Project> findByMembersContaining(User user);
+    Page<Project> findByMembersContaining(User user, Pageable pageable);
 }

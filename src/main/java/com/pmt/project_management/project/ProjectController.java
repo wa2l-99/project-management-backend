@@ -6,11 +6,13 @@ import com.pmt.project_management.user.UserResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.query.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -82,16 +84,19 @@ public class ProjectController {
     }
 
     @GetMapping("/my-projects")
-    public ResponseEntity<?> getMyProjects(Authentication authentication) {
+    public ResponseEntity<PageResponse<ProjectResponse>> getMyProjects(Authentication authentication,
+                                                                       @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+                                                                       @RequestParam(name = "size", defaultValue = "10", required = false) int size) {
         User connectedUser = (User) authentication.getPrincipal();
-        List<ProjectResponse> projects = projectService.getProjectsForUser(connectedUser);
+        PageResponse<ProjectResponse> projects = projectService.getProjectsForUser(page, size, connectedUser);
 
-        // Vérifier si l'utilisateur n'a aucun projet assigné
-        if (projects.isEmpty()) {
-            return ResponseEntity.ok("Vous n'êtes assigné à aucun projet.");
+        // Si aucun projet n'est trouvé, renvoyer une liste vide avec un message approprié
+        if (projects == null || projects.getContent().isEmpty()) {
+            // Retourner une réponse avec un body vide
+            return ResponseEntity.ok(new PageResponse<>(Collections.emptyList(), 0, size, 0, 0, true, true));
         }
 
-        // Sinon, retourner la liste des projets
+        // Retourner la liste des projets si elle n'est pas vide
         return ResponseEntity.ok(projects);
     }
 

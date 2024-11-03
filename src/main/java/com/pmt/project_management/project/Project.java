@@ -1,5 +1,6 @@
 package com.pmt.project_management.project;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pmt.project_management.common.BaseEntity;
 import com.pmt.project_management.task.Task;
@@ -50,7 +51,7 @@ public class Project extends BaseEntity {
 
     // Liste des tâches associées au projet (OneToMany relation)
     @OneToMany(mappedBy = "project")
-    @JsonIgnore
+    @JsonBackReference
     private List<Task> tasks;  // Les tâches associées au projet
 
 }

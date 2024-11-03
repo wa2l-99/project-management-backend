@@ -2,6 +2,7 @@ package com.pmt.project_management.project;
 
 
 import com.pmt.project_management.task.Task;
+import com.pmt.project_management.task.TaskResponse;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -21,5 +22,5 @@ public class ProjectResponse {
     private LocalDate startDate;
     private String owner;
     private Set<ProjectMemberResponse> members;
-    private List<Task> tasks;
+    private Set<TaskResponse> tasks;
 }

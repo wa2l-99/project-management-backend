@@ -11,6 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class ProjectMemberResponse {
     private String nom;
+    private String prenom;
     private String email;
     private String role;
 }

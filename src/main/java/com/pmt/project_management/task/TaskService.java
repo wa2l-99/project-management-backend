@@ -11,9 +11,14 @@ import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -177,22 +182,48 @@ public class TaskService {
     }
 
     // Méthode pour récupérer l'historique des tâches modifiées pour les projets de l'utilisateur connecté
-    public List<TaskHistoryResponse> getTaskModificationsForUserProjects(Authentication connectedUser) {
+// Méthode pour récupérer l'historique des tâches modifiées pour les projets de l'utilisateur connecté avec pagination
+    public List<TaskHistoryResponse> getTaskModificationsForUserProjects(Authentication connectedUser, int page, int size) {
         User user = (User) connectedUser.getPrincipal();
 
-        // Récupérer tous les projets auxquels l'utilisateur est membre, administrateur ou observateur
-        List<Project> userProjects = projectRepository.findByMembersContaining(user);
+        // Définir les paramètres de pagination
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
 
-        // Récupérer toutes les tâches de ces projets
-        List<Task> tasks = userProjects.stream()
+        // Récupérer les projets auxquels l'utilisateur est membre, administrateur ou observateur, avec pagination
+        Page<Project> userProjectsPage = projectRepository.findByMembersContaining(user, pageable);
+
+        // Si aucun projet n'est trouvé, retourner une liste vide
+        if (userProjectsPage.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Récupérer toutes les tâches des projets paginés
+        List<Task> tasks = userProjectsPage.getContent().stream()
                 .flatMap(project -> project.getTasks().stream())
                 .collect(Collectors.toList());
+
+        // Si aucune tâche n'est associée aux projets de l'utilisateur, retourner une liste vide
+        if (tasks.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         // Récupérer l'historique des modifications pour ces tâches
         List<TaskModifiedHistory> histories = taskModifiedHistoryRepository.findByTaskIn(tasks);
 
+        // Si aucun historique n'est trouvé, retourner une liste vide
+        if (histories.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         // Utiliser le mapper pour transformer les historiques en TaskHistoryResponse
-        return histories.stream().map(history -> TaskHistoryResponse.builder()
+        return histories.stream()
+                .map(this::mapToTaskHistoryResponse)
+                .collect(Collectors.toList());
+    }
+
+    // Mapper pour transformer l'entité TaskModifiedHistory en TaskHistoryResponse
+    private TaskHistoryResponse mapToTaskHistoryResponse(TaskModifiedHistory history) {
+        return TaskHistoryResponse.builder()
                 .taskId(history.getTask().getId())
                 .taskName(history.getTask().getName())
                 .projectName(history.getTask().getProject().getName())
@@ -200,8 +231,7 @@ public class TaskService {
                 .lastModifiedByName(history.getUser().getFullName())
                 .lastModifiedDate(history.getCreatedDate())
                 .modificationDescription(history.getDescription())
-                .build()
-        ).collect(Collectors.toList());
+                .build();
     }
 
 

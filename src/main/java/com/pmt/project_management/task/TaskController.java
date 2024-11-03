@@ -74,10 +74,18 @@ public class TaskController {
 
     @GetMapping("/my-projects/history")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MEMBER') or hasAuthority('OBSERVER')")
-    public ResponseEntity<List<TaskHistoryResponse>> getTaskModificationsForUserProjects(Authentication authentication) {
-        List<TaskHistoryResponse> history = taskService.getTaskModificationsForUserProjects(authentication);
+    public ResponseEntity<List<TaskHistoryResponse>> getTaskModificationsForUserProjects(
+            Authentication authentication,
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size) {
+
+        // Appeler le service pour obtenir l'historique avec pagination
+        List<TaskHistoryResponse> history = taskService.getTaskModificationsForUserProjects(authentication, page, size);
+
+        // Retourner la liste des historiques
         return ResponseEntity.ok(history);
     }
+
 
     // Endpoint pour assigner une tâche à un membre
     @PostMapping("/{taskId}/assign")

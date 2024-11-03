@@ -28,17 +28,14 @@ public class UserMapper {
         if (user == null) {
             return null;
         }
+        String roleName = (user.getRole() != null) ? user.getRole().getNom().name() : "No role";
+
         return UserResponse.builder()
                 .id(user.getId())
                 .nom(user.getNom())
                 .prenom(user.getPrenom())
                 .email(user.getEmail())
-                // Vérifier que la liste des rôles n'est pas nulle avant la conversion
-                .roles(user.getRoles() != null ?
-                        user.getRoles().stream()
-                                .map(role -> role.getNom().name())  // Conversion du Role en String (nom de l'ERole)
-                                .collect(Collectors.toList())
-                        : Collections.emptyList())  // Retourner une liste vide si aucun rôle
+                .role(roleName)  // Obtenir le nom unique du rôle
                 .build();
     }
 }

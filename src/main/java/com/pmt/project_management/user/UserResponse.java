@@ -16,7 +16,7 @@ public class UserResponse {
     private String nom;
     private String prenom;
     private String email;
-    private List<String> roles;
+    private String role;
 
 }
 
