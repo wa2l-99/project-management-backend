@@ -50,7 +50,7 @@ public class Project extends BaseEntity {
     private Set<User> members = new HashSet<>();  // Les membres affectés au projet
 
     // Liste des tâches associées au projet (OneToMany relation)
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private List<Task> tasks;  // Les tâches associées au projet
 

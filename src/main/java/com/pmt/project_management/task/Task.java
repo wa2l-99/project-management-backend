@@ -55,7 +55,7 @@ public class Task extends BaseEntity {
     @JsonManagedReference
     private User assignedTo;  // Membre à qui la tâche est assignée
 
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<TaskModifiedHistory> histories;
 }
