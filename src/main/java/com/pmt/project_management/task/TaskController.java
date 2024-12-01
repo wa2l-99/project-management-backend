@@ -74,10 +74,7 @@ public class TaskController {
 
     @GetMapping("/my-projects/history")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MEMBER') or hasAuthority('OBSERVER')")
-    public ResponseEntity<List<TaskHistoryResponse>> getTaskModificationsForUserProjects(
-            Authentication authentication,
-            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) int size) {
+    public ResponseEntity<List<TaskHistoryResponse>> getTaskModificationsForUserProjects(Authentication authentication, @RequestParam(name = "page", defaultValue = "0", required = false) int page, @RequestParam(name = "size", defaultValue = "10", required = false) int size) {
 
         // Appeler le service pour obtenir l'historique avec pagination
         List<TaskHistoryResponse> history = taskService.getTaskModificationsForUserProjects(authentication, page, size);
@@ -90,11 +87,15 @@ public class TaskController {
     // Endpoint pour assigner une tâche à un membre
     @PostMapping("/{taskId}/assign")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MEMBER')")
-    public ResponseEntity<TaskResponse> assignTaskToMember(
-            @PathVariable Integer taskId,
-            @RequestParam Integer memberId,
-            Authentication authentication) throws MessagingException {
+    public ResponseEntity<TaskResponse> assignTaskToMember(@PathVariable Integer taskId, @RequestParam Integer memberId, Authentication authentication) throws MessagingException {
         TaskResponse updatedTask = taskService.assignTaskToMember(taskId, memberId, authentication);
         return ResponseEntity.ok(updatedTask);
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MEMBER') or hasAuthority('OBSERVER')")
+    public ResponseEntity<List<TaskResponse>> getAllTasks(Authentication authentication) {
+        List<TaskResponse> tasks = taskService.getAllTasks(authentication);
+        return ResponseEntity.ok(tasks);
     }
 }

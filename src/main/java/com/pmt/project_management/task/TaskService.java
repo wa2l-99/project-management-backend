@@ -39,8 +39,7 @@ public class TaskService {
         User user = (User) connectedUser.getPrincipal();
 
         // Récupérer le projet par ID
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException("Projet non trouvé avec l'ID : " + projectId));
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException("Projet non trouvé avec l'ID : " + projectId));
 
         // Log pour voir si l'utilisateur est bien dans les membres du projet
         System.out.println("Membres du projet : " + project.getMembers());
@@ -66,8 +65,7 @@ public class TaskService {
         User user = (User) connectedUser.getPrincipal();
 
         // Récupérer la tâche existante
-        Task existingTask = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Tâche non trouvée avec l'ID : " + taskId));
+        Task existingTask = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Tâche non trouvée avec l'ID : " + taskId));
 
         // Copier l'ancienne version de la tâche pour comparaison
         Task oldTask = new Task();
@@ -100,8 +98,7 @@ public class TaskService {
     public TaskResponse getTaskById(Integer taskId, Authentication connectedUser) {
         User user = (User) connectedUser.getPrincipal();
 
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Tâche non trouvée avec l'ID : " + taskId));
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Tâche non trouvée avec l'ID : " + taskId));
 
         Project project = task.getProject();
         if (!project.getMembers().contains(user) && !project.getOwner().getId().equals(user.getId())) {
@@ -115,8 +112,7 @@ public class TaskService {
     public void deleteTask(Integer taskId, Authentication connectedUser) {
         User user = (User) connectedUser.getPrincipal();
 
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Tâche non trouvée avec l'ID : " + taskId));
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Tâche non trouvée avec l'ID : " + taskId));
 
         Project project = task.getProject();
         if (!project.getMembers().contains(user) && !project.getOwner().getId().equals(user.getId())) {
@@ -129,8 +125,7 @@ public class TaskService {
     public List<TaskResponse> getTasksByStatus(Integer projectId, EStatus status, Authentication connectedUser) {
         User user = (User) connectedUser.getPrincipal();
 
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException("Projet non trouvé avec l'ID : " + projectId));
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException("Projet non trouvé avec l'ID : " + projectId));
 
         if (!project.getMembers().contains(user) && !project.getOwner().getId().equals(user.getId())) {
             throw new IllegalStateException("Vous devez être membre, administrateur ou observateur pour voir les tâches.");
@@ -138,16 +133,13 @@ public class TaskService {
 
         List<Task> tasks = taskRepository.findByProjectAndStatus(project, status);
 
-        return tasks.stream()
-                .map(taskMapper::toTaskResponse)
-                .collect(Collectors.toList());
+        return tasks.stream().map(taskMapper::toTaskResponse).collect(Collectors.toList());
     }
 
     public List<TaskResponse> getTasksByPriority(Integer projectId, EPriority priority, Authentication connectedUser) {
         User user = (User) connectedUser.getPrincipal();
 
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException("Projet non trouvé avec l'ID : " + projectId));
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException("Projet non trouvé avec l'ID : " + projectId));
 
         if (!project.getMembers().contains(user) && !project.getOwner().getId().equals(user.getId())) {
             throw new IllegalStateException("Vous devez être membre, administrateur ou observateur pour voir les tâches.");
@@ -155,9 +147,7 @@ public class TaskService {
 
         List<Task> tasks = taskRepository.findByProjectAndPriority(project, priority);
 
-        return tasks.stream()
-                .map(taskMapper::toTaskResponse)
-                .collect(Collectors.toList());
+        return tasks.stream().map(taskMapper::toTaskResponse).collect(Collectors.toList());
     }
 
 
@@ -165,8 +155,7 @@ public class TaskService {
 
         User user = (User) authentication.getPrincipal();
 
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException("Projet non trouvé avec l'ID : " + projectId));
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException("Projet non trouvé avec l'ID : " + projectId));
 
         if (!project.getMembers().contains(user) && !project.getOwner().getId().equals(user.getId())) {
             throw new IllegalStateException("Vous devez être membre, administrateur ou observateur pour voir les tâches.");
@@ -174,9 +163,7 @@ public class TaskService {
 
         List<Task> tasks = taskRepository.findByProject(project);
 
-        List<TaskResponse> taskResponses = tasks.stream()
-                .map(taskMapper::toTaskResponse)
-                .toList();
+        List<TaskResponse> taskResponses = tasks.stream().map(taskMapper::toTaskResponse).toList();
 
         return taskResponses;
     }
@@ -198,9 +185,7 @@ public class TaskService {
         }
 
         // Récupérer toutes les tâches des projets paginés
-        List<Task> tasks = userProjectsPage.getContent().stream()
-                .flatMap(project -> project.getTasks().stream())
-                .collect(Collectors.toList());
+        List<Task> tasks = userProjectsPage.getContent().stream().flatMap(project -> project.getTasks().stream()).collect(Collectors.toList());
 
         // Si aucune tâche n'est associée aux projets de l'utilisateur, retourner une liste vide
         if (tasks.isEmpty()) {
@@ -216,30 +201,19 @@ public class TaskService {
         }
 
         // Utiliser le mapper pour transformer les historiques en TaskHistoryResponse
-        return histories.stream()
-                .map(this::mapToTaskHistoryResponse)
-                .collect(Collectors.toList());
+        return histories.stream().map(this::mapToTaskHistoryResponse).collect(Collectors.toList());
     }
 
     // Mapper pour transformer l'entité TaskModifiedHistory en TaskHistoryResponse
     private TaskHistoryResponse mapToTaskHistoryResponse(TaskModifiedHistory history) {
-        return TaskHistoryResponse.builder()
-                .taskId(history.getTask().getId())
-                .taskName(history.getTask().getName())
-                .projectName(history.getTask().getProject().getName())
-                .lastModifiedById(history.getUser().getId())
-                .lastModifiedByName(history.getUser().getFullName())
-                .lastModifiedDate(history.getCreatedDate())
-                .modificationDescription(history.getDescription())
-                .build();
+        return TaskHistoryResponse.builder().taskId(history.getTask().getId()).taskName(history.getTask().getName()).projectName(history.getTask().getProject().getName()).lastModifiedById(history.getUser().getId()).lastModifiedByName(history.getUser().getFullName()).lastModifiedDate(history.getCreatedDate()).modificationDescription(history.getDescription()).build();
     }
 
 
     public TaskResponse assignTaskToMember(Integer taskId, Integer memberId, Authentication connectedUser) throws MessagingException {
         User user = (User) connectedUser.getPrincipal();
 
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Tâche non trouvée avec l'ID : " + taskId));
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Tâche non trouvée avec l'ID : " + taskId));
 
         // Récupérer le projet auquel appartient la tâche
         Project project = task.getProject();
@@ -250,8 +224,7 @@ public class TaskService {
         }
 
         // Rechercher le membre à qui la tâche va être assignée par ID
-        User member = userRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé avec l'ID : " + memberId));
+        User member = userRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé avec l'ID : " + memberId));
 
         // Vérifier que le membre fait partie du projet
         if (!project.getMembers().contains(member)) {
@@ -268,4 +241,20 @@ public class TaskService {
         // Retourner la réponse de la tâche mise à jour
         return taskMapper.toTaskResponse(task);
     }
+
+    public List<TaskResponse> getAllTasks(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        // Vérifier si l'utilisateur est un administrateur ou un membre
+        if (!user.getRole().getNom().name().equals("ADMIN") && !user.getRole().getNom().name().equals("MEMBER") && !user.getRole().getNom().name().equals("OBSERVER")) {
+            throw new IllegalStateException("Vous devez être membre, administrateur ou observateur pour voir les tâches.");
+        }
+
+        // Récupérer toutes les tâches
+        List<Task> tasks = taskRepository.findAll();
+
+        // Mapper les tâches vers des réponses TaskResponse
+        return tasks.stream().map(taskMapper::toTaskResponse).toList();
+    }
+
 }
