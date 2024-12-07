@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class TaskRequest {
 
     private Integer id;
