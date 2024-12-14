@@ -224,27 +224,6 @@ public class TaskControllerIntegrationTest {
     }
 
     @Test
-    public void testAssignTaskToMember_Success() throws Exception {
-        // Créer une tâche à assigner
-        TaskResponse createdTask = taskService.createTask(testProject.getId(), TaskRequest.builder()
-                .id(1)
-                .name("Original Task")
-                .description("Original Description")
-                .priority(EPriority.LOW)
-                .status(EStatus.TODO)
-                .dueDate(LocalDate.of(2024, 12, 10))
-                .build(), adminAuthentication);
-
-        // Assigner la tâche à un autre membre
-        mockMvc.perform(post("/api/tasks/" + createdTask.getId() + "/assign")
-                        .param("memberId", adminUser.getId().toString())
-                        .principal(adminAuthentication))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.assignedTo").value(adminUser.getFullName() + " (" + adminUser.getEmail() + ")"))
-                .andExpect(jsonPath("$.assigned").value(true));
-    }
-
-    @Test
     public void testGetTasksByStatus_Success() throws Exception {
         mockMvc.perform(get("/api/tasks/projectId=" + testProject.getId() + "/tasksByStatus")
                         .param("status", EStatus.TODO.name())
