@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.pmt</groupId>
-    <artifactId>project-management</artifactId>
+    <artifactId>project-management-backend</artifactId>
     <version>1.0.0</version>
     <name>project-management</name>
     <description>project management application</description>
