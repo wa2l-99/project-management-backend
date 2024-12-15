@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
                         email = "mpmt@contact.com"
                 ),
                 description = "OpenApi documentation for spring security",
-                title = "Open specification - Medhead Consortium",
+                title = "Open specification - Project Management Tool",
                 version = "1.0",
                 termsOfService = "terms of service"
         ),        servers = {

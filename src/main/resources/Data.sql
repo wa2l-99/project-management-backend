@@ -9,9 +9,9 @@ ON CONFLICT (id) DO NOTHING;
 -- Insert data into the '_user' table
 INSERT INTO _user (id, created_date, email, last_modified_date, nom, password, prenom, role_id)
 VALUES
-    (1, NOW(), 'admin@example.com', NOW(), 'Admin', 'password123', 'John', 1),
-    (2, NOW(), 'member1@example.com', NOW(), 'Member1', 'password123', 'Jane', 2),
-    (3, NOW(), 'observer@example.com', NOW(), 'Observer', 'password123', 'Mike', 3)
+    (1, NOW(), 'admin@example.com', NOW(), 'Admin', '$2a$10$XvA0u7xinasa9s6Qu32w9ucVkszhCyASKpAUnJ8HjqHOuM6ROQjey', 'John', 1), --Password is : password123
+    (2, NOW(), 'member1@example.com', NOW(), 'Member1', '$2a$10$XvA0u7xinasa9s6Qu32w9ucVkszhCyASKpAUnJ8HjqHOuM6ROQjey', 'Jane', 2), --Password is : password123
+    (3, NOW(), 'observer@example.com', NOW(), 'Observer', '$2a$10$XvA0u7xinasa9s6Qu32w9ucVkszhCyASKpAUnJ8HjqHOuM6ROQjey', 'Mike', 3) --Password is : password123
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert data into the 'project' table
