@@ -13,6 +13,10 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  sql:
+    init:
+      mode: always
+      platform: postgres
   mail:
     host: smtp.gmail.com
     port: 587
@@ -40,4 +44,4 @@ springdoc:
   default-produces-media-type: application/json
 
 server:
-  port: 8088
+  port: 8089
