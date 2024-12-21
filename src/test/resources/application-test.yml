@@ -4,6 +4,8 @@ spring:
     url: jdbc:h2:mem:testdb
     username: sa
     password: password
+  flyway:
+    enabled: false
   jpa:
     hibernate:
       ddl-auto: create-drop
