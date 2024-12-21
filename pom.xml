@@ -11,7 +11,7 @@
     <groupId>com.pmt</groupId>
     <artifactId>project-management-backend</artifactId>
     <version>1.0.0</version>
-    <name>project-management</name>
+    <name>project-management-backend</name>
     <description>project management application</description>
     <url/>
     <licenses>
@@ -129,6 +129,20 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-toml -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-toml</artifactId>
+            <version>2.17.1</version>
         </dependency>
     </dependencies>
 
